@@ -90,16 +90,18 @@ bool TwoStageFFTConvolver::init(size_t headBlockSize,
     std::swap(headBlockSize, tailBlockSize);
   }
 
+  _headBlockSize = NextPowerOf2(headBlockSize);
+  _tailBlockSize = NextPowerOf2(tailBlockSize);
+
+  size_t minIrLen = 2 * _tailBlockSize;
+
   // Ignore zeros at the end of the impulse response because they only waste computation time
-  while (irLen > 0 && ::fabs(ir[irLen-1]) < 0.000001f)
+  while (irLen > minIrLen+1 && ::fabs(ir[irLen-1]) < 0.000001f)
   {
     --irLen;
   }
 
-  _headBlockSize = NextPowerOf2(headBlockSize);
-  _tailBlockSize = NextPowerOf2(tailBlockSize);
-
-  if (irLen <= 2 * _tailBlockSize)
+  if (irLen <= minIrLen)
     return false;
 
   const size_t headIrLen = std::min(irLen, _tailBlockSize);
