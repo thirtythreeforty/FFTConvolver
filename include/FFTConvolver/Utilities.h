@@ -107,7 +107,9 @@ public:
 
   void setZero()
   {
-    ::memset(_data, 0, _size * sizeof(T));
+    if (_size > 0) {
+      ::memset(_data, 0, _size * sizeof(T));
+    }
   }
 
   void copyFrom(const Buffer<T>& other)
